@@ -1,0 +1,39 @@
+{
+  "family": "srinikai-api",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::<acct>:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::<acct>:role/srinikaiTaskRole",
+  "containerDefinitions": [
+    {
+      "name": "srinikai-api",
+      "image": "<acct>.dkr.ecr.us-east-1.amazonaws.com/srinikai-api:latest",
+      "essential": true,
+      "portMappings": [{ "containerPort": 8000, "protocol": "tcp" }],
+      "environment": [
+        { "name": "ENV", "value": "production" },
+        { "name": "CORS_ORIGINS", "value": "https://app.yourdomain.com" },
+        { "name": "LLAMA_SERVER_URL", "value": "http://10.0.1.50:8080" },
+        { "name": "EMBEDDINGS_URL", "value": "http://10.0.1.50:8081" }
+      ],
+      "secrets": [
+        { "name": "JWT_SECRET", "valueFrom": "arn:aws:secretsmanager:us-east-1:<acct>:secret:srinikai/jwt" },
+        { "name": "DATABASE_URL", "valueFrom": "arn:aws:secretsmanager:us-east-1:<acct>:secret:srinikai/db:url::" }
+      ],
+      "healthCheck": {
+        "command": ["CMD-SHELL", "curl -fsS http://localhost:8000/api/health || exit 1"],
+        "interval": 30, "timeout": 5, "retries": 3
+      },
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/srinikai-api",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "api"
+        }
+      }
+    }
+  ]
+}

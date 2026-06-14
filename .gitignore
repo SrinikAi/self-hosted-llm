@@ -1,0 +1,56 @@
+# ---- Secrets / environment ----
+.env
+*.env
+.env.*
+# keep example/template env files
+!.env.example
+!*.env.example
+!.env.template
+
+# ---- Databases / data ----
+*.db
+*.sqlite
+*.sqlite3
+*.sql.gz
+*.dump
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ---- Node / frontend ----
+node_modules/
+dist/
+.next/
+.cache/
+npm-debug.log*
+yarn-error.log*
+
+# ---- C/C++ / CMake build artifacts ----
+/build/
+/build-*/
+*.o
+*.a
+*.so
+*.dll
+*.dylib
+*.exe
+CMakeCache.txt
+CMakeFiles/
+
+# ---- Editor / OS ----
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*~
+
+# ---- Logs ----
+*.log

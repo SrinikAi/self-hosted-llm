@@ -1,0 +1,4 @@
+# Production extras for Postgres + pgvector (AWS RDS).
+# Install on top of requirements.txt:  pip install -r requirements-postgres.txt
+psycopg[binary]==3.2.3
+pgvector==0.3.6

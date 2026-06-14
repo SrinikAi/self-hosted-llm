@@ -1,0 +1,47 @@
+# Local production-like stack: Postgres+pgvector, the SriniKai API, and a
+# static frontend. The model (llama-server) runs on the host; the API reaches
+# it via host.docker.internal.
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: srinikai
+      POSTGRES_PASSWORD: srinikai
+      POSTGRES_DB: srinikai
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U srinikai"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: ./backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ENV: production
+      DATABASE_URL: postgresql+psycopg://srinikai:srinikai@db:5432/srinikai
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in your shell or .env}
+      CORS_ORIGINS: http://localhost:8081
+      LLAMA_SERVER_URL: http://host.docker.internal:8080
+      EMBEDDINGS_URL: ${EMBEDDINGS_URL:-}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "8000:8000"
+
+  web:
+    image: nginx:alpine
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+    ports:
+      - "8081:80"
+
+volumes:
+  pgdata:

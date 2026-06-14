@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SriniKai</title>
+<style>
+  :root {
+    --bg:#f5f4ef; --panel:#fff; --panel-2:#faf9f5; --border:#e5e2d9;
+    --text:#2b2a27; --muted:#7d7a70; --accent:#c96442; --user-bg:#fff;
+    --code-bg:#f3f1ea; --shadow:0 1px 3px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.05);
+  }
+  html[data-theme="dark"]{
+    --bg:#1f1e1b; --panel:#262522; --panel-2:#2b2a26; --border:#393631;
+    --text:#ece9e2; --muted:#9b968a; --accent:#d97757; --user-bg:#2f2d29;
+    --code-bg:#181715; --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box;} html,body{height:100%;margin:0;}
+  body{background:var(--bg);color:var(--text);
+    font:16px/1.65 ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;}
+  .logo{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;
+    background:linear-gradient(135deg,var(--accent),#e0926f);color:#fff;font-weight:700;font-size:14px;}
+
+  /* ---------- Auth screen ---------- */
+  #auth{height:100%;display:grid;place-items:center;padding:20px;}
+  .card{width:100%;max-width:380px;background:var(--panel);border:1px solid var(--border);
+    border-radius:16px;box-shadow:var(--shadow);padding:28px;}
+  .card .brand{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:4px;}
+  .card .brand .logo{width:40px;height:40px;border-radius:11px;font-size:17px;}
+  .card h1{font-size:22px;text-align:center;margin:10px 0 2px;}
+  .card .sub{text-align:center;color:var(--muted);font-size:13px;margin-bottom:20px;}
+  .card label{display:block;font-size:12px;color:var(--muted);margin:12px 0 5px;}
+  .card input{width:100%;background:var(--panel-2);color:var(--text);border:1px solid var(--border);
+    border-radius:9px;padding:10px 12px;font:inherit;font-size:14px;}
+  .card input:focus{outline:none;border-color:var(--accent);}
+  .card button.primary{width:100%;margin-top:18px;background:var(--accent);color:#fff;border:none;
+    border-radius:10px;padding:11px;font:inherit;font-weight:600;cursor:pointer;}
+  .card button.primary:disabled{opacity:.6;cursor:default;}
+  .card .switch{text-align:center;margin-top:14px;font-size:13px;color:var(--muted);}
+  .card .switch a{color:var(--accent);cursor:pointer;text-decoration:none;}
+  .err{color:#d9534f;font-size:13px;margin-top:12px;text-align:center;min-height:18px;}
+  .hint-small{font-size:11px;color:var(--muted);margin-top:4px;}
+
+  /* ---------- App layout ---------- */
+  #app{display:none;height:100%;}
+  #app.on{display:grid;grid-template-columns:260px 1fr;}
+  aside{background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;min-width:0;}
+  aside .top{padding:14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
+  aside .top .name{font-weight:600;}
+  .newbtn{margin:12px;padding:9px 12px;border:1px solid var(--border);border-radius:10px;background:var(--panel-2);
+    color:var(--text);cursor:pointer;font:inherit;font-size:14px;display:flex;align-items:center;gap:8px;}
+  .newbtn:hover{border-color:var(--accent);}
+  .convos{flex:1;overflow-y:auto;padding:4px 8px;}
+  .convo{padding:9px 10px;border-radius:8px;cursor:pointer;font-size:14px;color:var(--text);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;justify-content:space-between;gap:6px;}
+  .convo:hover{background:var(--panel-2);} .convo.active{background:var(--panel-2);font-weight:600;}
+  .convo .del{opacity:0;color:var(--muted);} .convo:hover .del{opacity:1;}
+  aside .bottom{border-top:1px solid var(--border);padding:12px;display:flex;align-items:center;gap:8px;font-size:13px;}
+  aside .bottom .who{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .iconbtn{width:32px;height:32px;border-radius:8px;border:1px solid transparent;background:transparent;
+    color:var(--muted);cursor:pointer;font-size:15px;} .iconbtn:hover{background:var(--panel-2);color:var(--text);border-color:var(--border);}
+
+  main{display:flex;flex-direction:column;min-width:0;}
+  header.bar{display:flex;align-items:center;gap:10px;padding:12px 18px;border-bottom:1px solid var(--border);background:var(--panel);}
+  header.bar .tag{font-size:11px;color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:1px 8px;}
+  header.bar .spacer{flex:1;}
+  .toggle{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);}
+  .toggle input{accent-color:var(--accent);}
+
+  #chat{flex:1;overflow-y:auto;}
+  .col{max-width:760px;margin:0 auto;padding:24px 20px 8px;}
+  .welcome{text-align:center;padding:12vh 20px;}
+  .welcome .logo{width:56px;height:56px;border-radius:16px;font-size:22px;margin:0 auto 16px;}
+  .welcome h2{font-size:24px;margin:0 0 6px;}
+  .welcome p{color:var(--muted);margin:0;}
+  .turn{padding:8px 0;} .meta{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+  .meta .av{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;font-size:11px;font-weight:700;}
+  .turn.user .av{background:var(--border);} .turn.assistant .av{background:linear-gradient(135deg,var(--accent),#e0926f);color:#fff;}
+  .meta .who{font-size:13px;font-weight:600;}
+  .bubble{padding-left:34px;}
+  .turn.user .bubble{background:var(--user-bg);border:1px solid var(--border);border-radius:12px;padding:10px 14px;margin-left:34px;}
+  .prose{word-wrap:break-word;overflow-wrap:anywhere;} .prose>*:first-child{margin-top:0;} .prose>*:last-child{margin-bottom:0;}
+  .prose p{margin:0 0 12px;} .prose ul,.prose ol{margin:0 0 12px;padding-left:22px;} .prose a{color:var(--accent);}
+  .prose :not(pre)>code{background:var(--code-bg);padding:1px 5px;border-radius:5px;font:13.5px ui-monospace,Menlo,monospace;}
+  .codeblock{border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--code-bg);margin:0 0 12px;}
+  .codeblock .cb-head{display:flex;justify-content:space-between;padding:5px 10px;background:var(--panel-2);
+    border-bottom:1px solid var(--border);font-size:11px;color:var(--muted);}
+  .cb-copy{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:2px 8px;font-size:11px;cursor:pointer;}
+  .codeblock pre{margin:0;padding:12px;overflow-x:auto;} .codeblock code{font:13.5px ui-monospace,Menlo,monospace;}
+  .cursor{display:inline-block;width:8px;height:1.05em;background:var(--accent);border-radius:2px;vertical-align:text-bottom;animation:blink 1s steps(2) infinite;}
+  @keyframes blink{50%{opacity:0;}}
+  footer{padding:8px 20px 18px;background:linear-gradient(transparent,var(--bg) 30%);}
+  .composer{max-width:760px;margin:0 auto;background:var(--panel);border:1px solid var(--border);border-radius:16px;
+    box-shadow:var(--shadow);padding:8px 8px 8px 14px;display:flex;align-items:flex-end;gap:8px;}
+  .composer:focus-within{border-color:var(--accent);}
+  textarea{flex:1;resize:none;background:transparent;color:var(--text);border:none;outline:none;font:inherit;
+    padding:8px 0;max-height:220px;min-height:26px;line-height:1.5;}
+  .send{width:38px;height:38px;border-radius:10px;border:none;cursor:pointer;background:var(--accent);color:#fff;
+    display:grid;place-items:center;font-size:16px;} .send:disabled{background:var(--border);color:var(--muted);}
+  .send.stop{background:var(--text);}
+  .foot-hint{max-width:760px;margin:8px auto 0;text-align:center;color:var(--muted);font-size:11.5px;}
+</style>
+</head>
+<body>
+
+<!-- ===== Auth ===== -->
+<div id="auth">
+  <div class="card">
+    <div class="brand"><div class="logo">SK</div></div>
+    <h1 id="authTitle">Welcome to SriniKai</h1>
+    <div class="sub" id="authSub">Sign in to continue</div>
+    <div id="nameField" style="display:none">
+      <label>Name</label>
+      <input id="f_name" autocomplete="name" placeholder="Your name">
+    </div>
+    <label>Email</label>
+    <input id="f_email" type="email" autocomplete="email" placeholder="you@example.com">
+    <label>Password</label>
+    <input id="f_pass" type="password" autocomplete="current-password" placeholder="••••••••">
+    <div class="hint-small" id="passHint" style="display:none">At least 8 characters, mixing letters and numbers.</div>
+    <button class="primary" id="authBtn">Sign in</button>
+    <div class="err" id="authErr"></div>
+    <div class="switch" id="authSwitch">New here? <a id="switchLink">Create an account</a></div>
+  </div>
+</div>
+
+<!-- ===== App ===== -->
+<div id="app">
+  <aside>
+    <div class="top"><div class="logo">SK</div><span class="name">SriniKai</span></div>
+    <button class="newbtn" id="newChat">✎ New chat</button>
+    <div class="convos" id="convos"></div>
+    <div class="bottom">
+      <span class="who" id="whoami"></span>
+      <button class="iconbtn" id="themeBtn" title="Theme">◐</button>
+      <button class="iconbtn" id="logout" title="Sign out">⎋</button>
+    </div>
+  </aside>
+  <main>
+    <header class="bar">
+      <strong>SriniKai</strong><span class="tag">private</span>
+      <span class="spacer"></span>
+      <label class="toggle"><input type="checkbox" id="webToggle"> Web access</label>
+    </header>
+    <div id="chat"><div class="col" id="messages"></div></div>
+    <footer>
+      <div class="composer">
+        <textarea id="input" rows="1" placeholder="Message SriniKai…"></textarea>
+        <button class="send" id="send" title="Send">↑</button>
+      </div>
+      <div class="foot-hint">SriniKai can make mistakes. Responses are generated privately.</div>
+    </footer>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11/lib/common.min.js"></script>
+<link rel="stylesheet" id="hljs-theme" href="https://cdn.jsdelivr.net/npm/highlight.js@11/styles/atom-one-light.min.css">
+<script>
+const API = localStorage.getItem('sk-api') || 'http://localhost:8000';
+const $ = s => document.querySelector(s);
+let token = localStorage.getItem('sk-token') || '';
+let mode = 'login';                 // login | register
+let currentConvo = null;
+let streaming = false, abortCtl = null;
+
+const hasMD = () => typeof marked !== 'undefined' && typeof DOMPurify !== 'undefined';
+if (hasMD()) marked.setOptions({ breaks:true, gfm:true });
+const md = t => hasMD() ? DOMPurify.sanitize(marked.parse(t)) : esc(t);
+const esc = s => { const d=document.createElement('div'); d.textContent=s; return d.innerHTML; };
+
+/* ---------- theme ---------- */
+const setTheme = t => { document.documentElement.dataset.theme=t;
+  $('#hljs-theme').href=`https://cdn.jsdelivr.net/npm/highlight.js@11/styles/atom-one-${t==='dark'?'dark':'light'}.min.css`;
+  localStorage.setItem('sk-theme',t); };
+setTheme(localStorage.getItem('sk-theme')||'light');
+
+/* ---------- auth ---------- */
+function renderAuthMode(){
+  const reg = mode==='register';
+  $('#authTitle').textContent = reg ? 'Create your account' : 'Welcome to SriniKai';
+  $('#authSub').textContent   = reg ? 'It takes a few seconds' : 'Sign in to continue';
+  $('#authBtn').textContent   = reg ? 'Create account' : 'Sign in';
+  $('#nameField').style.display = reg ? 'block':'none';
+  $('#passHint').style.display  = reg ? 'block':'none';
+  $('#f_pass').autocomplete     = reg ? 'new-password':'current-password';
+  $('#authSwitch').innerHTML    = reg
+    ? `Already have an account? <a id="switchLink">Sign in</a>`
+    : `New here? <a id="switchLink">Create an account</a>`;
+  $('#switchLink').onclick = () => { mode = reg?'login':'register'; $('#authErr').textContent=''; renderAuthMode(); };
+}
+async function doAuth(){
+  $('#authErr').textContent='';
+  const email=$('#f_email').value.trim(), pass=$('#f_pass').value, name=$('#f_name').value.trim();
+  if(!email||!pass) return $('#authErr').textContent='Please fill in all fields.';
+  const body = mode==='register' ? {email,password:pass,display_name:name||email.split('@')[0]} : {email,password:pass};
+  $('#authBtn').disabled=true;
+  try{
+    const res = await fetch(`${API}/api/auth/${mode==='register'?'register':'login'}`,{
+      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const data = await res.json().catch(()=>({}));
+    if(!res.ok) throw new Error(data.detail ? (typeof data.detail==='string'?data.detail:'Check your details.') : 'Something went wrong.');
+    token = data.access_token; localStorage.setItem('sk-token',token);
+    await enterApp();
+  }catch(e){ $('#authErr').textContent = e.message; }
+  finally{ $('#authBtn').disabled=false; }
+}
+$('#authBtn').onclick = doAuth;
+[ '#f_email','#f_pass','#f_name' ].forEach(s=>$(s).addEventListener('keydown',e=>{ if(e.key==='Enter') doAuth(); }));
+
+/* ---------- app boot ---------- */
+async function enterApp(){
+  try{
+    const me = await api('/api/auth/me');
+    $('#whoami').textContent = me.display_name;
+    $('#auth').style.display='none'; $('#app').classList.add('on');
+    await loadConvos(); newChat();
+    $('#input').focus();
+  }catch(e){ logout(); }
+}
+function logout(){
+  token=''; localStorage.removeItem('sk-token');
+  $('#app').classList.remove('on'); $('#auth').style.display='grid';
+  $('#f_pass').value=''; renderAuthMode();
+}
+$('#logout').onclick = logout;
+$('#themeBtn').onclick = () => setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');
+
+/* ---------- api helper ---------- */
+async function api(path, opts={}){
+  const res = await fetch(API+path,{...opts,headers:{'Content-Type':'application/json','Authorization':'Bearer '+token,...(opts.headers||{})}});
+  if(res.status===401){ logout(); throw new Error('Session expired'); }
+  if(!res.ok) throw new Error('Request failed '+res.status);
+  return res.status===204 ? null : res.json();
+}
+
+/* ---------- conversations ---------- */
+async function loadConvos(){
+  const list = await api('/api/conversations');
+  const el = $('#convos'); el.innerHTML='';
+  list.forEach(c=>{
+    const d=document.createElement('div'); d.className='convo'+(c.id===currentConvo?' active':'');
+    d.innerHTML=`<span>${esc(c.title||'New chat')}</span><span class="del" title="Delete">🗑</span>`;
+    d.querySelector('span').onclick=()=>openConvo(c.id);
+    d.onclick=(e)=>{ if(!e.target.classList.contains('del')) openConvo(c.id); };
+    d.querySelector('.del').onclick=async(e)=>{ e.stopPropagation(); await api('/api/conversations/'+c.id,{method:'DELETE'});
+      if(c.id===currentConvo) newChat(); loadConvos(); };
+    el.append(d);
+  });
+}
+async function openConvo(id){
+  currentConvo=id; await loadConvos();
+  const msgs = await api(`/api/conversations/${id}/messages`);
+  $('#messages').innerHTML='';
+  msgs.forEach(m=>{ const p=addTurn(m.role); p.innerHTML=md(m.content); decorate(p); });
+}
+function newChat(){ currentConvo=null; $('#messages').innerHTML=`
+  <div class="welcome"><div class="logo">SK</div><h2>How can I help, today?</h2>
+  <p>I'm SriniKai — your private assistant.</p></div>`;
+  document.querySelectorAll('.convo.active').forEach(e=>e.classList.remove('active')); }
+$('#newChat').onclick = newChat;
+
+/* ---------- rendering ---------- */
+function addTurn(role){
+  if($('#messages').querySelector('.welcome')) $('#messages').innerHTML='';
+  const t=document.createElement('div'); t.className='turn '+role;
+  const meta=document.createElement('div'); meta.className='meta';
+  meta.innerHTML=`<div class="av">${role==='user'?'You':'SK'}</div><div class="who">${role==='user'?'You':'SriniKai'}</div>`;
+  const b=document.createElement('div'); b.className='bubble';
+  const p=document.createElement('div'); p.className='prose'; b.append(p);
+  t.append(meta,b); $('#messages').append(t);
+  $('#chat').scrollTop=$('#chat').scrollHeight; return p;
+}
+function decorate(c){
+  c.querySelectorAll('pre>code').forEach(code=>{
+    const pre=code.parentElement; if(pre.dataset.done) return; pre.dataset.done='1';
+    const lang=(code.className.match(/language-(\w+)/)||[])[1]||'text';
+    if(typeof hljs!=='undefined'){ try{hljs.highlightElement(code);}catch(_){} }
+    const w=document.createElement('div'); w.className='codeblock';
+    const h=document.createElement('div'); h.className='cb-head'; h.innerHTML=`<span>${lang}</span>`;
+    const btn=document.createElement('button'); btn.className='cb-copy'; btn.textContent='Copy';
+    btn.onclick=()=>{navigator.clipboard.writeText(code.textContent);btn.textContent='Copied';setTimeout(()=>btn.textContent='Copy',1200);};
+    h.append(btn); pre.replaceWith(w); w.append(h,pre);
+  });
+}
+
+/* ---------- chat ---------- */
+function setSending(on){ streaming=on; const b=$('#send'); b.classList.toggle('stop',on);
+  b.textContent=on?'■':'↑'; b.title=on?'Stop':'Send'; }
+
+async function send(){
+  if(streaming){ abortCtl?.abort(); return; }
+  const text=$('#input').value.trim(); if(!text) return;
+  $('#input').value=''; $('#input').style.height='auto';
+  const up=addTurn('user'); up.innerHTML=md(text);
+  const out=addTurn('assistant'); out.innerHTML='<span class="cursor"></span>';
+  let acc=''; setSending(true);
+  abortCtl=new AbortController();
+  try{
+    const res=await fetch(API+'/api/chat',{method:'POST',signal:abortCtl.signal,
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body:JSON.stringify({conversation_id:currentConvo,message:text,
+        web:$('#webToggle').checked,temperature:0.7})});
+    if(res.status===401){ logout(); return; }
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const reader=res.body.getReader(); const dec=new TextDecoder(); let buf='';
+    while(true){
+      const {done,value}=await reader.read(); if(done) break;
+      buf+=dec.decode(value,{stream:true}); const lines=buf.split('\n'); buf=lines.pop();
+      for(const line of lines){ const t=line.trim(); if(!t.startsWith('data:')) continue;
+        const data=t.slice(5).trim(); if(data==='[DONE]') continue;
+        try{ const o=JSON.parse(data);
+          if(o.conversation_id && !currentConvo){ currentConvo=o.conversation_id; loadConvos(); }
+          if(o.delta){ acc+=o.delta; out.innerHTML=md(acc)+'<span class="cursor"></span>';
+            $('#chat').scrollTop=$('#chat').scrollHeight; }
+          if(o.error){ acc+=`\n\n> ⚠️ ${o.error}`; }
+        }catch(_){}
+      }
+    }
+    out.innerHTML=md(acc); decorate(out);
+  }catch(e){
+    if(e.name==='AbortError') out.innerHTML=md(acc||'_(stopped)_');
+    else out.innerHTML=md(acc)+`\n\n> ⚠️ ${esc(e.message)}`;
+    decorate(out);
+  }finally{ setSending(false); abortCtl=null; $('#input').focus(); }
+}
+$('#send').onclick=send;
+$('#input').addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();} });
+$('#input').addEventListener('input',()=>{ const i=$('#input'); i.style.height='auto'; i.style.height=Math.min(i.scrollHeight,220)+'px'; });
+
+/* ---------- start ---------- */
+renderAuthMode();
+if(token) enterApp(); else { $('#auth').style.display='grid'; }
+</script>
+</body>
+</html>
