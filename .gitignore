@@ -54,3 +54,6 @@ CMakeFiles/
 
 # ---- Logs ----
 *.log
+
+#----Personal files----
+/src/personal/
