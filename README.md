@@ -195,7 +195,6 @@ cp .env.example .env          # then set a strong JWT_SECRET:
 ./.venv/bin/uvicorn app.main:app --reload --port 8000
 ```
 
-Interactive API docs: http://localhost:8000/docs
 
 ### 4. Start the frontend
 
