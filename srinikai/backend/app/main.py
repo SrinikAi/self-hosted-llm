@@ -63,3 +63,15 @@ async def unhandled_exc(request: Request, exc: Exception):
 @app.get("/api/health", tags=["meta"])
 def health():
     return {"status": "ok", "service": settings.app_name}
+
+
+# Serve the static frontend from the same origin as the API. This makes the
+# app work unchanged whether it's reached via localhost, a LAN IP, or a tunnel,
+# and avoids cross-origin/CORS issues entirely. Mounted last (after all /api
+# routes) so it only catches paths the API doesn't handle.
+from pathlib import Path  # noqa: E402
+from fastapi.staticfiles import StaticFiles  # noqa: E402
+
+_frontend_dir = Path(__file__).resolve().parents[2] / "frontend"
+if _frontend_dir.is_dir():
+    app.mount("/", StaticFiles(directory=str(_frontend_dir), html=True), name="frontend")

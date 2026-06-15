@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     jwt_alg: str = "HS256"
     access_token_expire_minutes: int = 10080  # 7 days
 
-    cors_origins: str = "http://localhost:5173,http://127.0.0.1:5500"
+    cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173,http://127.0.0.1:5500"
     rate_limit_auth: str = "10/minute"
     rate_limit_chat: str = "30/minute"
 

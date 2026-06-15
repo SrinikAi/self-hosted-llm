@@ -158,7 +158,9 @@
 <script src="https://cdn.jsdelivr.net/npm/highlight.js@11/lib/common.min.js"></script>
 <link rel="stylesheet" id="hljs-theme" href="https://cdn.jsdelivr.net/npm/highlight.js@11/styles/atom-one-light.min.css">
 <script>
-const API = localStorage.getItem('sk-api') || 'http://localhost:8000';
+// Default to same-origin so the page works wherever it's served from
+// (localhost, LAN, or a tunnel). Override with localStorage 'sk-api' if needed.
+const API = localStorage.getItem('sk-api') || '';
 const $ = s => document.querySelector(s);
 let token = localStorage.getItem('sk-token') || '';
 let mode = 'login';                 // login | register
