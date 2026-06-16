@@ -272,10 +272,6 @@ guide in [`srinikai/DEPLOY.md`](srinikai/DEPLOY.md).
 
 ![Chat view, light theme](srinikai/docs/screenshots/chat-light.png)
 
-> Screenshots are regenerated from the live frontend with
-> [`srinikai/docs/screenshots/_capture.py`](srinikai/docs/screenshots/_capture.py)
-> (headless Chrome, no backend required).
-
 ---
 
 Built on [llama.cpp](https://github.com/ggml-org/llama.cpp). The upstream project
